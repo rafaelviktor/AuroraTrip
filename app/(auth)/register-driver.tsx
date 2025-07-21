@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Button, StyleSheet, Text, TextInput, View, useColorScheme } from 'react-native';
+import { Alert, Button, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View, useColorScheme } from 'react-native';
 import api from '../../services/api';
 
 export default function RegisterDriverScreen() {
@@ -36,100 +36,110 @@ export default function RegisterDriverScreen() {
       Alert.alert('Sucesso', 'Motorista cadastrado com sucesso! Faça o login para continuar.');
       router.push('/(auth)/login');
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error('Falha no cadastro:', error.response?.data || error.message);
-            Alert.alert('Falha no Cadastro', error.response?.data?.message || 'Não foi possível realizar o cadastro.');
-        } else {
-            console.error('Falha no cadastro (Erro inesperado):', error);
-            Alert.alert('Erro Inesperado', 'Ocorreu um erro. Tente novamente.');
-        }
+      if (axios.isAxiosError(error)) {
+        console.error('Falha no cadastro:', error.response?.data || error.message);
+        Alert.alert('Falha no Cadastro', error.response?.data?.message || 'Não foi possível realizar o cadastro.');
+      } else {
+        console.error('Falha no cadastro (Erro inesperado):', error);
+        Alert.alert('Erro Inesperado', 'Ocorreu um erro. Tente novamente.');
+      }
     }
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      
-      <Text style={[styles.title, { color: colors.text }]}>Cadastro de Motorista</Text>
+    <>
+      <Stack.Screen options={{ title: 'Registrar motorista' }} />
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: colors.background }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
+        >
 
-      <TextInput
-        style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
-        placeholder="Nome de usuário"
-        value={username}
-        onChangeText={setUsername}
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
-        placeholder="Nome Completo"
-        value={name}
-        onChangeText={setName}
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
-        placeholder="Telefone (com DDD)"
-        value={phone}
-        onChangeText={setPhone}
-        keyboardType="phone-pad"
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
-        placeholder="Senha"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        placeholderTextColor={colors.placeholder}
-      />
-      
-      <Text style={[styles.label, { color: colors.text }]}>Principal tipo de transporte:</Text>
-      <View style={styles.switchContainer}>
-        <Button title="Buggy" onPress={() => setTransportType('buggy')} color={transportType === 'buggy' ? colors.primary : 'gray'} />
-        <Button title="Lancha" onPress={() => setTransportType('lancha')} color={transportType === 'lancha' ? colors.primary : 'gray'} />
-        <Button title="4x4" onPress={() => setTransportType('4x4')} color={transportType === '4x4' ? colors.primary : 'gray'} />
-      </View>
+        <Text style={[styles.title, { color: colors.text }]}>Cadastro de Motorista</Text>
 
-      <Button title="Cadastrar" onPress={handleRegister} />
-    </View>
+        <TextInput
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+          placeholder="Nome de usuário"
+          value={username}
+          onChangeText={setUsername}
+          placeholderTextColor={colors.placeholder}
+        />
+        <TextInput
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+          placeholder="Nome Completo"
+          value={name}
+          onChangeText={setName}
+          placeholderTextColor={colors.placeholder}
+        />
+        <TextInput
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          placeholderTextColor={colors.placeholder}
+        />
+        <TextInput
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+          placeholder="Telefone (com DDD)"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+          placeholderTextColor={colors.placeholder}
+        />
+        <TextInput
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+          placeholder="Senha"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          placeholderTextColor={colors.placeholder}
+        />
+
+        <Text style={[styles.label, { color: colors.text }]}>Principal tipo de transporte:</Text>
+        <View style={styles.switchContainer}>
+          <Button title="Buggy" onPress={() => setTransportType('buggy')} color={transportType === 'buggy' ? colors.primary : 'gray'} />
+          <Button title="Lancha" onPress={() => setTransportType('lancha')} color={transportType === 'lancha' ? colors.primary : 'gray'} />
+          <Button title="4x4" onPress={() => setTransportType('4x4')} color={transportType === '4x4' ? colors.primary : 'gray'} />
+        </View>
+
+        <Button title="Cadastrar" onPress={handleRegister} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    padding: 20 
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20
   },
-  title: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    textAlign: 'center', 
-    marginBottom: 20 
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20
   },
-  input: { 
-    height: 40, 
-    borderWidth: 1, 
-    marginBottom: 12, 
-    paddingHorizontal: 10, 
-    borderRadius: 5 
+  input: {
+    height: 40,
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingHorizontal: 10,
+    borderRadius: 5
   },
-  label: { 
-    fontSize: 16, 
-    marginBottom: 10, 
-    marginTop: 10 
+  label: {
+    fontSize: 16,
+    marginBottom: 10,
+    marginTop: 10
   },
-  switchContainer: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-around', 
-    marginBottom: 20 
+  switchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20
   },
 });

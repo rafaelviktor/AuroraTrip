@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Button, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
+import { Alert, Button, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, useColorScheme } from 'react-native';
 import api from '../../services/api';
 
 export default function RegisterUserScreen() {
@@ -45,43 +45,53 @@ export default function RegisterUserScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Cadastro de Usuário</Text>
-      <TextInput
-        style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
-        placeholder="Nome de usuário" value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
-        placeholder="Nome Completo"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
-        placeholder="Telefone (com DDD)"
-        value={phone}
-        onChangeText={setPhone}
-        keyboardType="phone-pad"
-      />
-      <TextInput
-        style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
-        placeholder="Senha"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Button title="Cadastrar" onPress={handleRegister} />
-    </View>
+    <>
+      <Stack.Screen options={{ title: 'Registrar usuário' }} />
+            <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: colors.background }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
+        >
+        <Text style={[styles.title, { color: colors.text }]}>Cadastro de Usuário</Text>
+        <TextInput
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+          placeholder="Nome de usuário" value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+          placeholder="Nome Completo"
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+          placeholder="Telefone (com DDD)"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+        />
+        <TextInput
+          style={[styles.input, { borderColor: colors.inputBorder, color: colors.text }]}
+          placeholder="Senha"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        <Button title="Cadastrar" onPress={handleRegister} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </>
   );
 }
 
