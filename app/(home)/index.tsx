@@ -5,8 +5,8 @@ import TourPackageCard from '../../components/TourPackageCard';
 import api from '../../services/api';
 import { PackageTour } from '../../types/api';
 
-export default function ExploreScreen() {
-  const [packages, setPackages] = useState<PackageTour[]>([]);
+export default function HomeScreen() {
+const [packages, setPackages] = useState<PackageTour[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -62,7 +62,7 @@ export default function ExploreScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Stack.Screen options={{ title: 'Explorar Passeios' }} />
+      <Stack.Screen options={{ headerShown: true, title: 'Home' }} />
       <FlatList
         data={packages}
         renderItem={({ item }) => <TourPackageCard item={item} />}

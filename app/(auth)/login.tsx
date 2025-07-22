@@ -44,7 +44,7 @@ export default function LoginScreen() {
         Alert.alert('Sucesso', 'Login realizado com sucesso!');
 
         // Navega para a tela principal do app após o login
-        router.dismissTo('/(tabs)');
+        router.dismissTo('/(home)');
       } else {
         // Caso a API não retorne os tokens esperados
         throw new Error('Tokens não recebidos na resposta do login.');

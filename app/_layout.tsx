@@ -20,7 +20,8 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="(home)" options={{ headerShown: false }} />
+        <Stack.Screen name="(home)" options={{ headerShown: false, title: '' }} />
+        <Stack.Screen name="(stack)/wallet" options={{ title: 'Carteira' }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
