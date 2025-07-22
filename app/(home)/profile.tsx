@@ -59,9 +59,7 @@ export default function ProfileScreen() {
   }, [fetchProfile]);
 
   function formatPhone(raw: string) {
-    console.log('Raw phone:', raw);
     const phone = parsePhoneNumberFromString(raw, 'BR');
-    console.log('Formatted phone:', phone);
     if (!phone) return raw;
 
     return phone.formatInternational();
