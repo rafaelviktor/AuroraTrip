@@ -1,10 +1,10 @@
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { clearTokens } from '@/services/tokenManager';
 import axios from 'axios';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Button, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { ActivityIndicator, Alert, Button, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 import ProfileInfoRow from '../../components/ProfileInfoRow';
 import VehicleInfoCard from '../../components/VehicleInfoCard';
 import api from '../../services/api';
@@ -20,23 +20,21 @@ export default function ProfileScreen() {
   const isDarkMode = colorScheme === 'dark';
 
   const colors = {
+    primary: '#007AFF',
     background: isDarkMode ? '#000000' : '#f0f0f0',
     infoContainer: isDarkMode ? '#1c1c1e' : '#FFFFFF',
     text: isDarkMode ? '#FFFFFF' : '#000000',
     errorText: '#ff5252',
     sectionTitle: isDarkMode ? '#b0b0b0' : '#666666',
-    logout: '#ff3b30',
+    logout: isDarkMode ? '#ff453a' : '#ff3b30',
   };
 
   const fetchProfile = useCallback(async () => {
-    setLoading(true);
     setError(null);
     try {
-      // 1. Tenta buscar o perfil de usuário
       const response = await api.get('/users/my-profile');
       setProfile(response.data);
     } catch (err) {
-      // 2. Se falhar com 404, tenta buscar o perfil de motorista
       if (axios.isAxiosError(err) && err.response?.status === 404) {
         try {
           const driverResponse = await api.get('/drivers/my-profile');
@@ -54,9 +52,12 @@ export default function ProfileScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true); // Mostra o loading no primeiro carregamento
+      fetchProfile();
+    }, [fetchProfile])
+  );
 
   function formatPhone(raw: string) {
     const phone = parsePhoneNumberFromString(raw, 'BR');
@@ -68,6 +69,33 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     await clearTokens();
     router.replace('/(auth)/login');
+  };
+
+  const handleDeleteVehicle = (vehicleId: string) => {
+    Alert.alert(
+      "Confirmar Exclusão",
+      "Você tem certeza que deseja excluir este veículo? Esta ação não pode ser desfeita.",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          onPress: async () => {
+            try {
+              await api.delete(`/vehicles/${vehicleId}`);
+              Alert.alert("Sucesso", "Veículo excluído com sucesso.");
+              fetchProfile();
+            } catch (err) {
+              if (axios.isAxiosError(err)) {
+                Alert.alert("Erro", err.response?.data?.message || "Não foi possível excluir o veículo.");
+              } else {
+                Alert.alert("Erro", "Ocorreu um erro inesperado.");
+              }
+            }
+          },
+          style: "destructive" // Deixa o texto do botão vermelho no iOS
+        }
+      ]
+    );
   };
 
   const renderContent = () => {
@@ -94,12 +122,30 @@ export default function ProfileScreen() {
           <Button title="Minha Carteira" onPress={() => router.push('/wallet')} />
         </View>
 
-        {profile.role === 'driver' && profile.vehicles.length > 0 && (
+        {profile.role === 'driver' && (
           <View style={styles.vehiclesContainer}>
-            <Text style={[styles.sectionTitle, { color: colors.sectionTitle }]}>Meus Veículos</Text>
-            {profile.vehicles.map(vehicle => (
-              <VehicleInfoCard key={vehicle._id} vehicle={vehicle} />
-            ))}
+            <View style={styles.sectionHeader}>
+              <Text style={[styles.sectionTitle, { color: colors.sectionTitle }]}>Meus Veículos</Text>
+              <TouchableOpacity onPress={() => router.push('/form-vehicle')}>
+                <IconSymbol name="plus.circle" size={28} color={colors.primary} />
+              </TouchableOpacity>
+            </View>
+
+            {profile.vehicles.length > 0 ? (
+              profile.vehicles.map(vehicle => (
+                <VehicleInfoCard
+                  key={vehicle._id}
+                  vehicle={vehicle}
+                  onEdit={() => router.push({
+                    pathname: '/form-vehicle',
+                    params: { vehicle: JSON.stringify(vehicle) }
+                  })}
+                  onDelete={() => handleDeleteVehicle(vehicle._id)}
+                />
+              ))
+            ) : (
+              <Text style={{ color: colors.sectionTitle, textAlign: 'center' }}>Nenhum veículo cadastrado.</Text>
+            )}
           </View>
         )}
 
@@ -114,6 +160,7 @@ export default function ProfileScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: colors.background }]}
+      contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
       refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchProfile} />}
     >
       <Stack.Screen options={{ headerShown: true, title: 'Perfil' }} />
@@ -133,22 +180,26 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     marginHorizontal: 15,
-    marginTop: 20,
   },
   vehiclesContainer: {
     marginHorizontal: 15,
-    marginTop: 30,
+    marginTop: 15,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 15,
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
+    marginTop: 15,
     padding: 10,
   },
   logoutText: {
