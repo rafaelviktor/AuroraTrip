@@ -14,7 +14,7 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     // Lista de rotas que NÃO precisam de autenticação
-    const publicRoutes = ['/auth/login', '/auth/refresh', '/users', '/drivers', '/package-tours'];
+    const publicRoutes = ['/auth/login', '/auth/refresh', '/users', '/drivers', '/package-tours', '/tourist-points'];
 
     // Se a rota não for pública, anexa o token
     if (!publicRoutes.includes(config.url || '')) {

@@ -20,6 +20,9 @@ const MAPPING = {
   'plus.circle': 'add-circle-outline',
   'trash': 'delete',
   'pencil': 'edit',
+  'chevron.left.forwardslash.chevron.right': 'code',
+  'chevron.up': 'keyboard-arrow-up',
+  'chevron.down': 'keyboard-arrow-down',
 } as IconMapping;
 
 /**

@@ -35,10 +35,10 @@ export default function LoginScreen() {
         password: password,
       });
 
-      const { access_token, refresh_token } = response.data;
+      const { access_token, refresh_token, role } = response.data;
 
       if (access_token && refresh_token) {
-        await saveTokens(access_token, refresh_token);
+        await saveTokens(access_token, refresh_token, role);
 
         console.log('Tokens salvos com sucesso!');
         Alert.alert('Sucesso', 'Login realizado com sucesso!');

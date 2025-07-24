@@ -1,6 +1,9 @@
-import { Stack } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { getUserRole } from '@/services/tokenManager';
+import { router, Stack, useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 import TourPackageCard from '../../components/TourPackageCard';
 import api from '../../services/api';
 import { PackageTour } from '../../types/api';
@@ -10,6 +13,7 @@ const [packages, setPackages] = useState<PackageTour[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null); // 2. Estado para o role
 
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
@@ -34,9 +38,17 @@ const [packages, setPackages] = useState<PackageTour[]>([]);
     }
   };
 
-  useEffect(() => {
-    fetchPackages();
+  const checkUserRole = useCallback(async () => {
+    const role = await getUserRole();
+    setUserRole(role);
   }, []);
+  
+  useFocusEffect(
+    useCallback(() => {
+      fetchPackages();
+      checkUserRole();
+    }, [fetchPackages, checkUserRole])
+  );
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -62,7 +74,20 @@ const [packages, setPackages] = useState<PackageTour[]>([]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Stack.Screen options={{ headerShown: true, title: 'Home' }} />
+      <Stack.Screen 
+        options={{
+          headerShown: true,
+          title: 'Home',
+          // 5. Adicionar o botão de + no cabeçalho condicionalmente
+          headerRight: () => (
+            userRole === 'driver' && (
+              <TouchableOpacity onPress={() => router.push('/form-package')} style={{ marginRight: 15 }}>
+                <IconSymbol name="plus.circle" size={28} color={Colors[colorScheme ?? 'light'].tint} />
+              </TouchableOpacity>
+            )
+          ),
+        }} 
+      />
       <FlatList
         data={packages}
         renderItem={({ item }) => <TourPackageCard item={item} />}
