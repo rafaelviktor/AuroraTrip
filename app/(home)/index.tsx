@@ -55,6 +55,14 @@ const [packages, setPackages] = useState<PackageTour[]>([]);
     fetchPackages();
   };
 
+  const handleCardPress = (packageData: PackageTour) => {
+    router.push({
+      pathname: '/package-details',
+      // Passa o objeto completo do pacote como uma string JSON
+      params: { packageData: JSON.stringify(packageData) }
+    });
+  };
+
   if (loading) {
     return (
       <View style={[styles.centerContainer, { backgroundColor: colors.background }]}>
@@ -90,7 +98,7 @@ const [packages, setPackages] = useState<PackageTour[]>([]);
       />
       <FlatList
         data={packages}
-        renderItem={({ item }) => <TourPackageCard item={item} />}
+        renderItem={({ item }) => <TourPackageCard item={item} onPress={() => handleCardPress(item)} />}
         keyExtractor={(item) => item._id}
         ListEmptyComponent={
           <View style={styles.centerContainer}>

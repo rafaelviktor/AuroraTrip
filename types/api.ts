@@ -1,5 +1,3 @@
-// Define a estrutura dos dados que vêm da sua API
-
 export interface TouristPoint {
   _id: string;
   name: string;
@@ -50,10 +48,10 @@ export interface PackageTour {
   price: number;
   seatsAvailable: number;
   tourType: string;
-  // Futuramente, você pode adicionar um campo como 'imageUrl' aqui
+  // Futuramente, pode adicionar um campo como 'imageUrl'
 }
 
-// Novo tipo para os dados da carteira
+// Carteira
 export interface Wallet {
   _id: string;
   owner: string;
@@ -63,7 +61,7 @@ export interface Wallet {
   updatedAt: string;
 }
 
-// Novo tipo para uma única transação
+// Transação
 export interface Transaction {
   _id: string;
   walletId: string;
@@ -77,10 +75,28 @@ export interface Transaction {
   createdAt: string;
 }
 
-// Novo tipo para a resposta da API de transações
+// Transações
 export interface TransactionsApiResponse {
   data: Transaction[];
   currentPage: number;
   totalPages: number;
   totalTransactions: number;
+}
+
+// Reserva
+export interface Booking {
+  _id: string;
+  packageTour: {
+    _id: string;
+    departureTime: string;
+    tourType: string;
+  };
+  driver: {
+    _id: string;
+    name: string;
+  };
+  seats: number;
+  totalPrice: number;
+  status: 'pending_payment' | 'confirmed' | 'in_progress' | 'completed' | 'canceled_by_user' | 'canceled_by_driver';
+  createdAt: string;
 }

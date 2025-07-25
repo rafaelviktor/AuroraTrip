@@ -12,7 +12,7 @@ import { ProfileData } from '../../types/api';
 
 export default function ProfileScreen() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -48,13 +48,12 @@ export default function ProfileScreen() {
         setError('Ocorreu um erro ao carregar seu perfil.');
       }
     } finally {
-      setLoading(false);
+
     }
   }, []);
 
   useFocusEffect(
     useCallback(() => {
-      setLoading(true); // Mostra o loading no primeiro carregamento
       fetchProfile();
     }, [fetchProfile])
   );
@@ -108,6 +107,17 @@ export default function ProfileScreen() {
 
     return (
       <>
+        <View style={styles.actionsContainer}>
+          <View style={styles.buttonWrapper}>
+            <Button title="Minha Carteira" onPress={() => router.push('/wallet')} />
+          </View>
+          
+          {profile.role === 'user' && (
+            <View style={styles.buttonWrapper}>
+              <Button title="Minhas Reservas" onPress={() => router.push('/my-bookings')} />
+            </View>
+          )}
+        </View>
         <View style={[styles.infoContainer, { backgroundColor: colors.infoContainer }]}>
           <ProfileInfoRow label="Nome" value={profile.name} />
           <ProfileInfoRow label="Apelido" value={`@${profile.username}`} />
@@ -116,10 +126,6 @@ export default function ProfileScreen() {
           {profile.role === 'driver' && (
             <ProfileInfoRow label="Tipo de Transporte" value={profile.transportType} isLast={true} />
           )}
-        </View>
-
-        <View style={styles.actionsContainer}>
-          <Button title="Minha Carteira" onPress={() => router.push('/wallet')} />
         </View>
 
         {profile.role === 'driver' && (
@@ -179,7 +185,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   actionsContainer: {
-    marginHorizontal: 15,
+    marginHorizontal: 10, // Diminuí um pouco a margem lateral
+    marginTop: 20,
+    flexDirection: 'row', // Organiza os filhos em uma linha
+    justifyContent: 'center', // Centraliza os botões
+  },
+  buttonWrapper: {
+    flex: 1, // Faz cada wrapper de botão ocupar o mesmo espaço
+    marginHorizontal: 5, // Adiciona um espaço entre os botões
   },
   vehiclesContainer: {
     marginHorizontal: 15,

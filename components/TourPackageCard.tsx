@@ -1,12 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 import { PackageTour } from '../types/api';
 
 interface TourPackageCardProps {
   item: PackageTour;
+  onPress: () => void;
 }
 
-export default function TourPackageCard({ item }: TourPackageCardProps) {
+export default function TourPackageCard({ item, onPress }: TourPackageCardProps) {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
 
@@ -21,7 +22,7 @@ export default function TourPackageCard({ item }: TourPackageCardProps) {
   const departureDate = new Date(item.departureTime).toLocaleDateString('pt-BR');
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.cardBackground }]}>
+    <TouchableOpacity onPress={onPress} style={[styles.card, { backgroundColor: colors.cardBackground }]}>
       <View style={[styles.imagePlaceholder, { backgroundColor: colors.imagePlaceholder }]}>
         <Text style={{ color: colors.textSecondary }}>Imagem do Passeio</Text>
       </View>
@@ -33,7 +34,7 @@ export default function TourPackageCard({ item }: TourPackageCardProps) {
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
           com {item.driver.name} em um(a) {item.driver.transportType}
         </Text>
-        
+
         <View style={styles.detailsRow}>
           <Text style={[styles.detailText, { color: colors.textSecondary }]}>
             Data: {departureDate}
@@ -47,7 +48,7 @@ export default function TourPackageCard({ item }: TourPackageCardProps) {
           R$ {item.price.toFixed(2).replace('.', ',')} por pessoa
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
